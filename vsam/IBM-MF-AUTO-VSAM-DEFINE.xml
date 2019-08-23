@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workflow>
+  <workflowSettingInfo>
+    <variablesSetting isInstanceVariableWithoutPrefix="true"></variablesSetting>
+  </workflowSettingInfo>
+
+  <!-- Workflow metadata - information about the workflow itself -->
+
+  <workflowInfo>
+    <workflowID scope="system" isCallable="system">IBM-MF-AUTO-VSAM-DEFINE</workflowID>
+    <workflowDefaultName>Define VSAM</workflowDefaultName>
+    <workflowDescription>This workflow may be used to define a new VSAM</workflowDescription>
+    <workflowVersion>1.0</workflowVersion>
+    <vendor>IBM-MF-AUTO</vendor>
+    <General/>
+
+  </workflowInfo>
+
+  <!--                         Variables                         -->
+
+  <!--
+tipo (bcs, ksds(tamanho de chave, ci), lds, rrds, ssds)
+extended
+shareOptions(1,3)
+dataclass
+strgclass
+mgmtclass -->
+
+  <variable name="vsam-name" scope="instance" visibility="public">
+    <label>VSAM Name</label>
+    <abstract>Name that will be assigned to your VSAM</abstract>
+    <description>Name that will be assigned to your VSAM</description>
+    <category>VSAM</category>
+    <string valueMustBeChoice="false" multiLine="false">
+      <validationType>DSNAME</validationType>
+      <default>YOUR.DSN</default>
+    </string>
+  </variable>
+
+  <variable name="primary-space" scope="instance" visibility="public">
+    <label>Primary Space Allocation</label>
+    <abstract>VSAM Space Allocation</abstract>
+    <description>Provide Primary and Secondary allocation</description>
+    <category>SPACE</category>
+    <integer>
+      <default>1</default>
+    </integer>
+  </variable>
+
+  <variable name="secondary-space" scope="instance" visibility="public">
+    <label>Secondary Space Allocation</label>
+    <abstract>VSAM Space Allocation</abstract>
+    <description>Provide Primary and Secondary allocation</description>
+    <category>SPACE</category>
+    <integer/>
+  </variable>
+
+  <variable name="aloc-unit" scope="instance" visibility="public">
+    <label>Allocation Unit</label>
+    <abstract>Allocation Unit(Tracks, Cylinder, Blocks)</abstract>
+    <description>Allocation Unit to be used on the VSAM Allocation</description>
+    <category>SPACE</category>
+    <string valueMustBeChoice="true">
+      <minLength>1</minLength>
+      <maxLength>20</maxLength>
+      <choice>CYLINDERS</choice>
+      <choice>MEGABYTES</choice>
+      <choice>KILOBYTES</choice>
+      <choice>RECORDS</choice>
+      <choice>TRACKS</choice>
+      <default>TRACKS</default>
+    </string>
+  </variable>
+
+  <variable name="is-extended" scope="instance" visibility="public">
+    <label>Extended?</label>
+    <abstract>Is this VSAM allocation extended?</abstract>
+    <description>Is this VSAM allocation extended?</description>
+    <category>VSAM</category>
+    <boolean>
+      <default>false</default>
+    </boolean>
+  </variable>
+  
+
+
+
+
+
+
+
+
+  <atCreate name="vsam-name" scope="instance" required="true" prompt="true"/>
+  <atCreate name="primary-space" scope="instance" required="true" prompt="true"/>
+  <atCreate name="secondary-space" scope="instance" required="false" prompt="true"/>
+  <atCreate name="aloc-unit" scope="instance" required="true" prompt="true"/>
+  <atCreate name="is-extended" scope="instance" required="false" prompt="true"/>
+
+  <!--                         Steps                             -->
+
+  <step name="stepName">
+    <title>Define new VSAM</title>
+    <description>Define new VSAM datasets using IDCAMS</description>
+    <!--  Variables call  -->
+    <variableValue name="vsam-name" scope="instance" noPromptIfSet="true" required="true"/>
+    <variableValue name="primary-space" scope="instance" noPromptIfSet="true" required="true"/>
+    <variableValue name="secondary-space" scope="instance" noPromptIfSet="true" required="false"/>
+    <variableValue name="aloc-unit" scope="instance" noPromptIfSet="true" required="true"/>
+    <variableValue name="is-extended" scope="instance" noPromptIfSet="true" required="false"/>
+
+    <instructions substitution="false"></instructions>
+    <weight>1</weight>
+    <skills>IDCAMS</skills>
+    <autoEnable>false</autoEnable>
+    <canMarkAsFailed>false</canMarkAsFailed>
+    <template>
+      <inlineTemplate substitution="true">
+//STEP1    EXEC PGM=IDCAMS
+//SYSPRINT DD SYSOUT=A
+//SYSIN    DD     *
+    DEFINE CLUSTER            -
+           (                  -
+             NAME($vsam-name) -
+             $aloc-unit($primary-space #if($secondary-space) $secondary-space #end) -
+             #if($is-extended) EXTENDED #end -
+           )
+
+         
+/*
+      </inlineTemplate>
+      <submitAs>JCL</submitAs>
+    </template>
+  </step>
+
+</workflow>
