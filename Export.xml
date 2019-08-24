@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workflow>
+    <autoTakeOwnership>true</autoTakeOwnership>
+    <workflowSettingInfo>
+        <variablesSetting isInstanceVariableWithoutPrefix="true"></variablesSetting>
+    </workflowSettingInfo>
+    <workflowInfo>
+        <workflowID scope="none" isCallable="sysplex">IBM-MF-EXPORT-VSAM</workflowID>
+        <workflowDescription>IBM-MF-EXPORT-VSAM</workflowDescription>
+        <workflowVersion>1.0</workflowVersion>
+        <vendor>IBM-MF</vendor>
+        <General/>
+    </workflowInfo>
+    <variable name="input-export" scope="instance" visibility="public">
+        <label>Please enter the VSAM source file </label>
+        <abstract>This will be used to point the source VSAM file</abstract>
+        <description>This will be used to point the source file to be exported</description>
+        <category>Storage</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <default>CAT.VSAM.EXPORT</default>
+        </string>
+    </variable>
+    <variable name="output-export" scope="instance" visibility="public">
+        <label>Please enter the VSAM target file </label>
+        <abstract>This will be used to point the target flat file</abstract>
+        <description>This will be used to point the target flat file</description>
+        <category>Storage</category>
+        <string valueMustBeChoice="false" multiLine="false">
+            <validationType>DSNAME</validationType>
+            <default>USERID.DATASET.SEQ</default>
+        </string>
+    </variable>
+
+    <variable name="is-temporary" scope="instance" visibility="public">
+    <label>Temporary?</label>
+    <abstract>Is this Export part of a Reorg ? If yes it is Temporary</abstract>
+    <description>TEMPORARY specifies that the catalog is not to be deleted.
+     The catalog is marked "temporary" to indicate that another copy exists
+     and that the original copy can be replaced. This is a required parameter
+      when exporting a catalog that cannot be exported with the PERMANENT parameter</description>
+    <category>Storage</category>
+    <boolean>
+      <default>true</default>
+    </boolean>
+  </variable>
+
+
+    <atCreate name="input-export" scope="instance" required="true" prompt="true"/>
+    <atCreate name="output-export" scope="instance" required="true" prompt="true"/>
+    <atCreate name="is-temporary" scope="instance" required="false" prompt="true"/>
+
+    <step name="Export-step" optional="false">
+        <title>Export Catalog</title>
+        <description>This is to EXPORT a catalog</description>
+        <variableValue name="input-export" scope="instance" noPromptIfSet="true" required="true"/>
+        <variableValue name="output-export" scope="instance" noPromptIfSet="true" required="true"/>
+        <variableValue name="is-temporary" scope="instance" noPromptIfSet="true" required="false"/>
+
+        <instructions substitution="false"></instructions>
+        <weight>1</weight>
+        <skills>EXPORT</skills>
+        <autoEnable>false</autoEnable>
+        <canMarkAsFailed>false</canMarkAsFailed>
+            <template>
+                <inlineTemplate substitution="true">
+                    //STEP1    EXEC  PGM=IDCAMS
+                    //RECEIVE  DD    DSNAME=$output-export,UNIT=(SYSDA),
+                    //         DISP=(NEW,CATLG.DELETE),SPACE=(CYL,(5,5),RLSE),
+                    //          BLKSIZE=0,LRECL=80,RECFM=FB
+                    //SYSPRINT DD    SYSOUT=A
+                    //SYSIN    DD    *
+                     EXPORT -
+                     $input-export -
+                     OUTFILE(RECEIVE) -
+                     #if($is-temporary) TEMPORARY #end -
+                    /*
+                     
+                </inlineTemplate>
+            <submitAs>JCL</submitAs>
+            </template>
+    </step>
+</workflow>
