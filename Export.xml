@@ -64,17 +64,17 @@
         <canMarkAsFailed>false</canMarkAsFailed>
             <template>
                 <inlineTemplate substitution="true">
-                    //STEP1    EXEC  PGM=IDCAMS
-                    //RECEIVE  DD    DSNAME=$output-export,UNIT=(SYSDA),
-                    //         DISP=(NEW,CATLG.DELETE),SPACE=(CYL,(5,5),RLSE),
-                    //          BLKSIZE=0,LRECL=80,RECFM=FB
-                    //SYSPRINT DD    SYSOUT=A
-                    //SYSIN    DD    *
-                     EXPORT -
-                     $input-export -
-                     OUTFILE(RECEIVE) -
-                     #if($is-temporary) TEMPORARY #end -
-                    /*
+//STEP1    EXEC  PGM=IDCAMS
+//RECEIVE  DD    DSNAME=$output-export,UNIT=(SYSDA),
+//         DISP=(NEW,CATLG.DELETE),SPACE=(CYL,(5,5),RLSE),
+//          BLKSIZE=0,LRECL=80,RECFM=FB
+//SYSPRINT DD    SYSOUT=A
+//SYSIN    DD    *
+ EXPORT -
+ $input-export -
+ OUTFILE(RECEIVE) -
+ #if($is-temporary) TEMPORARY #end -
+ /*
                      
                 </inlineTemplate>
             <submitAs>JCL</submitAs>
