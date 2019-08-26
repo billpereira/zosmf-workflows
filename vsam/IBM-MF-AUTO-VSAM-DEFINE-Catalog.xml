@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<workflow>
+  <workflowSettingInfo>
+    <variablesSetting isInstanceVariableWithoutPrefix="true"></variablesSetting>
+  </workflowSettingInfo>
+
+<!-- Workflow metadata - information about the workflow itself -->
+
+  <workflowInfo>
+  <workflowID scope="system" isCallable="system">WorkFlow ID</workflowID>
+  <workflowDefaultName>WorkFlow Name</workflowDefaultName>
+  <workflowDescription>WorkFlow Description</workflowDescription>
+  <workflowVersion>1.0</workflowVersion>
+  <vendor>Vendor</vendor>
+  <General/>
+
+  </workflowInfo>
+
+<!--                         Variables                         -->
+
+
+
+<!--                         Steps                             -->
+
+
+</workflow>
